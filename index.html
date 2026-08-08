@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photobooth Class IX-6</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 15px;
+            color: #1e293b;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0284c7;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        /* Layout Utama */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            width: 100%;
+            max-width: 900px;
+            align-items: center;
+        }
+
+        @media (min-width: 768px) {
+            .app-container {
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: center;
+            }
+        }
+
+        /* Card Wrapper */
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Area Video / Kamera */
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            background-color: #0f172a;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.2);
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.2s ease;
+        }
+
+        /* Utility Class untuk Mirror Kamera */
+        video.mirror {
+            transform: scaleX(-1);
+        }
+
+        /* Overlay Countdown */
+        .countdown-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 5rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .countdown-overlay.active {
+            opacity: 1;
+        }
+
+        /* Control & Buttons */
+        .controls {
+            width: 100%;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f1f5f9;
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        /* Custom Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: .3s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #0284c7;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+        }
+
+        .btn-primary:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            margin-top: 15px;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        }
+
+        /* Preview Hasil Foto */
+        .result-card {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .strip-preview {
+            max-width: 200px;
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        canvas {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1><i class="fa-solid fa-camera-retro"></i> Photobooth Web</h1>
+        <p>Capture your moment • Class IX-6</p>
+    </header>
+
+    <div class="app-container">
+        <div class="card">
+            <div class="video-wrapper">
+                <video id="webcam" autoplay playsinline class="mirror"></video>
+                <div id="countdown" class="countdown-overlay">3</div>
+            </div>
+
+            <div class="controls">
+                <div class="toggle-container">
+                    <span><i class="fa-solid fa-arrows-left-right"></i> Mode Mirror</span>
+                    <label class="switch">
+                        <input type="checkbox" id="mirrorToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <button id="startBtn" class="btn btn-primary">
+                    <i class="fa-solid fa-play"></i> Mulai Foto (3 Pose)
+                </button>
+            </div>
+        </div>
+
+        <div id="resultCard" class="card result-card">
+            <img id="stripImg" class="strip-preview" alt="Photo Strip IX-6">
+            <button id="downloadBtn" class="btn btn-success">
+                <i class="fa-solid fa-download"></i> Cetak / Download PNG
+            </button>
+        </div>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        // --- ELEMENT REFERENCES ---
+        const video = document.getElementById('webcam');
+        const mirrorToggle = document.getElementById('mirrorToggle');
+        const startBtn = document.getElementById('startBtn');
+        const countdownEl = document.getElementById('countdown');
+        const resultCard = document.getElementById('resultCard');
+        const stripImg = document.getElementById('stripImg');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let isMirror = true;
+
+        // --- AUDIO SYSTEM (Web Audio API) ---
+        // Dibuat secara sintetis agar tidak butuh file audio eksternal
+        const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+
+        function playBeepSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, audioCtx.currentTime); // Frekuensi 800Hz
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.15);
+        }
+
+        function playShutterSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            // Efek suara klik jepretan kamera singkat
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.08);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.08);
+        }
+
+        // --- 1. INISIALISASI KAMERA ---
+        navigator.mediaDevices.getUserMedia({
+                video: {
+                    width: {
+                        ideal: 1280
+                    },
+                    height: {
+                        ideal: 960
+                    }
+                },
+                audio: false
+            })
+            .then(stream => {
+                video.srcObject = stream;
+            })
+            .catch(err => {
+                alert("Akses kamera ditolak atau tidak ditemukan! Pastikan kamu memberi izin di browser.");
+            });
+
+        // --- 2. FITUR MIRROR TOGGLE ---
+        mirrorToggle.addEventListener('change', (e) => {
+            isMirror = e.target.checked;
+            if (isMirror) {
+                video.classList.add('mirror');
+            } else {
+                video.classList.remove('mirror');
+            }
+        });
+
+        // --- 3. PROSES AMBIL FOTO (3 POSE) ---
+        startBtn.addEventListener('click', async () => {
+            startBtn.disabled = true;
+            resultCard.style.display = 'none';
+            const capturedPhotos = [];
+
+            for (let i = 1; i <= 3; i++) {
+                await runCountdown(3);
+                playShutterSound();
+
+                // Flash visual sederhana saat jepret
+                countdownEl.innerText = "📸";
+                countdownEl.classList.add('active');
+                await new Promise(r => setTimeout(r, 200));
+                countdownEl.classList.remove('active');
+
+                const photoData = captureSingleFrame();
+                capturedPhotos.push(photoData);
+            }
+
+            // Buat Photo Strip setelah 3 foto terkumpul
+            generatePhotoStrip(capturedPhotos);
+            startBtn.disabled = false;
+        });
+
+        // Fungsi Countdown dengan suara
+        function runCountdown(seconds) {
+            return new Promise(resolve => {
+                let count = seconds;
+                countdownEl.innerText = count;
+                countdownEl.classList.add('active');
+                playBeepSound();
+
+                const timer = setInterval(() => {
+                    count--;
+                    if (count > 0) {
+                        countdownEl.innerText = count;
+                        playBeepSound();
+                    } else {
+                        clearInterval(timer);
+                        countdownEl.classList.remove('active');
+                        resolve();
+                    }
+                }, 1000);
+            });
+        }
+
+        // Capture Frame dari Video Stream
+        function captureSingleFrame() {
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = video.videoWidth || 640;
+            tempCanvas.height = video.videoHeight || 480;
+
+            // Handle mode Mirror saat menggambar ke canvas
+            if (isMirror) {
+                tempCtx.translate(tempCanvas.width, 0);
+                tempCtx.scale(-1, 1);
+            }
+
+            tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+            return tempCanvas.toDataURL('image/png');
+        }
+
+        // --- 4. GENERATE PHOTO STRIP (BORDER GRADASI & TEKS) ---
+        function generatePhotoStrip(photos) {
+            // Dimensi Photo Strip High-Resolution
+            const stripWidth = 400;
+            const photoHeight = 280;
+            const padding = 20;
+            const headerHeight = 30;
+            const footerHeight = 80;
+
+            const stripHeight = headerHeight + (photoHeight * 3) + (padding * 4) + footerHeight;
+
+            canvas.width = stripWidth;
+            canvas.height = stripHeight;
+
+            // A. Gambar Border Gradasi (Putih ke Biru)
+            const gradient = ctx.createLinearGradient(0, 0, 0, stripHeight);
+            gradient.addColorStop(0, '#ffffff'); // Putih di atas
+            gradient.addColorStop(1, '#bae6fd'); // Biru Muda di bawah
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, stripWidth, stripHeight);
+
+            // B. Gambar Frame/Kartu Putih Dalam (Opsional agar foto rapi)
+            let photosLoaded = 0;
+
+            photos.forEach((photoSrc, index) => {
+                const img = new Image();
+                img.src = photoSrc;
+                img.onload = () => {
+                    const x = padding;
+                    const y = headerHeight + padding + index * (photoHeight + padding);
+
+                    // Gambar Foto
+                    ctx.drawImage(img, x, y, stripWidth - (padding * 2), photoHeight);
+
+                    // Border tipis putih di sekeliling foto
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 4;
+                    ctx.strokeRect(x, y, stripWidth - (padding * 2), photoHeight);
+
+                    photosLoaded++;
+
+                    // Jika semua 3 foto sudah selesai digambar
+                    if (photosLoaded === 3) {
+                        drawFooterText();
+                    }
+                };
+            });
+
+            // C. Gambar Teks "class IX-6" di Bagian Bawah
+            function drawFooterText() {
+                const textY = stripHeight - (footerHeight / 2);
+
+                // Teks Utama: class IX-6
+                ctx.fillStyle = '#0284c7'; // Warna Biru
+                ctx.font = 'bold 28px "Poppins", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('class IX-6', stripWidth / 2, textY - 8);
+
+                // Sub-Teks Tanggal
+                const dateStr = new Date().toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                });
+                ctx.fillStyle = '#64748b';
+                ctx.font = '12px "Poppins", sans-serif';
+                ctx.fillText(dateStr, stripWidth / 2, textY + 20);
+
+                // Render hasil ke Elemen Image & Tampilkan
+                const finalDataUrl = canvas.toDataURL('image/png');
+                stripImg.src = finalDataUrl;
+                resultCard.style.display = 'flex';
+
+                // Smooth scroll ke hasil di tampilan mobile
+                resultCard.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // --- 5. AKSI DOWNLOAD PNG ---
+        downloadBtn.addEventListener('click', () => {
+            const a = document.createElement('a');
+            a.href = stripImg.src;
+            a.download = `Photobooth_IX-6_${Date.now()}.png`;
+            a.click();
+        });
+    </script>
+</body>
+
+</html>
