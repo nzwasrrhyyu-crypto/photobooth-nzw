@@ -33,8 +33,8 @@
     .container {
       width: 100%;
       max-width: 450px;
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(8px);
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(10px);
       border-radius: 28px;
       padding: 25px 20px;
       box-shadow: 0 15px 35px rgba(244, 114, 182, 0.15);
@@ -43,17 +43,11 @@
       position: relative;
     }
 
-    /* Animasi Floating untuk Pita & Elemen Header */
+    /* Animasi Floating untuk Pita */
     @keyframes floatRibbon {
       0% { transform: translateY(0px) rotate(0deg); }
       50% { transform: translateY(-8px) rotate(3deg); }
       100% { transform: translateY(0px) rotate(0deg); }
-    }
-
-    @keyframes pulseGlow {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.03); }
-      100% { transform: scale(1); }
     }
 
     .ribbon-icon {
@@ -82,7 +76,7 @@
     .view-section { display: none; }
     .view-section.active { display: block; }
 
-    /* Button Styling + Animasi Hover */
+    /* Button Styling */
     .btn {
       background: linear-gradient(135deg, #fb7185 0%, #f43f5e 100%);
       color: white;
@@ -95,18 +89,14 @@
       font-size: 0.95rem;
       margin-top: 10px;
       box-shadow: 0 6px 15px rgba(244, 63, 94, 0.25);
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
     }
 
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(244, 63, 94, 0.35);
-    }
-
+    .btn:hover { transform: translateY(-2px); }
     .btn:active { transform: scale(0.97); }
 
     .btn-secondary {
@@ -115,9 +105,14 @@
       box-shadow: none;
     }
 
-    .btn-secondary:hover { background: #fbe1e6; }
+    .btn-small {
+      width: auto;
+      padding: 8px 14px;
+      font-size: 0.8rem;
+      margin-top: 0;
+    }
 
-    /* Camera Area */
+    /* Camera Controls Overlay */
     .camera-box {
       width: 100%;
       height: 280px;
@@ -125,7 +120,7 @@
       border-radius: 20px;
       overflow: hidden;
       position: relative;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       border: 3px solid #fda4af;
     }
 
@@ -133,6 +128,18 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transition: transform 0.3s;
+    }
+
+    video.mirror {
+      transform: scaleX(-1);
+    }
+
+    .camera-tools {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 12px;
     }
 
     .countdown-overlay {
@@ -192,7 +199,6 @@
       background: rgba(255, 255, 255, 0.4);
     }
 
-    /* Emoji Action Controls (Hapus & Resize) */
     .emoji-controls {
       position: absolute;
       top: -35px;
@@ -232,7 +238,7 @@
       cursor: pointer;
     }
 
-    /* Custom Controls (Frame & Emoji Picker) */
+    /* Custom Controls */
     .controls-panel {
       display: flex;
       flex-direction: column;
@@ -310,11 +316,18 @@
     <!-- CAMERA VIEW -->
     <div id="cameraView" class="view-section">
       <div class="camera-box">
-        <video id="video" autoplay playsinline></video>
+        <video id="video" class="mirror" autoplay playsinline></video>
         <div id="countdown" class="countdown-overlay">3</div>
       </div>
+
+      <!-- Kamera Mode Options (Mirror & Switch Facing) -->
+      <div class="camera-tools">
+        <button class="btn btn-secondary btn-small" onclick="toggleMirror()"><i class="fa-solid fa-arrows-left-right"></i> Mirror</button>
+        <button class="btn btn-secondary btn-small" onclick="switchCamera()"><i class="fa-solid fa-camera-rotate"></i> Ganti Kamera</button>
+      </div>
+
       <button id="snapBtn" class="btn" onclick="takePhotos()"><i class="fa-solid fa-aperture"></i> Mulai Foto (3 Pose)</button>
-      <button class="btn btn-secondary" onclick="resetApp()">Kembali</button>
+      <button class="btn btn-secondary" onclick="resetApp()">Kembali ke Beranda</button>
     </div>
 
     <!-- RESULT VIEW -->
@@ -353,7 +366,7 @@
       </div>
 
       <button class="btn" onclick="downloadStrip()"><i class="fa-solid fa-download"></i> Download Hasil PNG</button>
-      <button class="btn btn-secondary" onclick="resetApp()">Foto Ulang</button>
+      <button class="btn btn-secondary" onclick="resetApp()">Foto Ulang / Beranda</button>
     </div>
 
     <footer>Nazwa Sri Rahayu | SMAN 1 Cijeruk</footer>
@@ -372,6 +385,28 @@
     let stream = null;
     let capturedImages = [];
     let currentFrameColor = '#ffffff';
+    let currentFacingMode = 'user';
+    let isMirrored = true;
+
+    // Web Audio API untuk Efek Suara
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    function playBeepSound(freq = 800, type = 'sine', duration = 0.1) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function playShutterSound() {
+      playBeepSound(1200, 'square', 0.15);
+    }
 
     function showView(view) {
       document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
@@ -379,8 +414,12 @@
     }
 
     async function startCamera() {
+      stopCamera();
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: currentFacingMode },
+          audio: false
+        });
         video.srcObject = stream;
         showView(cameraView);
       } catch (err) {
@@ -388,34 +427,56 @@
       }
     }
 
+    function toggleMirror() {
+      isMirrored = !isMirrored;
+      if (isMirrored) {
+        video.classList.add('mirror');
+      } else {
+        video.classList.remove('mirror');
+      }
+    }
+
+    function switchCamera() {
+      currentFacingMode = (currentFacingMode === 'user') ? 'environment' : 'user';
+      startCamera();
+    }
+
     function takePhotos() {
       capturedImages = [];
       document.getElementById('snapBtn').style.display = 'none';
-      let count = 3;
 
       const takeNextPhoto = (index) => {
         let timer = 3;
         countdownEl.innerText = timer;
         countdownEl.classList.add('show');
+        playBeepSound(600);
 
         const interval = setInterval(() => {
           timer--;
           if (timer > 0) {
             countdownEl.innerText = timer;
+            playBeepSound(600);
           } else {
             clearInterval(interval);
+            playShutterSound();
             countdownEl.classList.remove('show');
             
-            // Capture image
+            // Capture Frame
             const tempCanvas = document.createElement('canvas');
             tempCanvas.width = video.videoWidth || 640;
             tempCanvas.height = video.videoHeight || 480;
             const tempCtx = tempCanvas.getContext('2d');
+
+            if (isMirrored && currentFacingMode === 'user') {
+              tempCtx.translate(tempCanvas.width, 0);
+              tempCtx.scale(-1, 1);
+            }
+
             tempCtx.drawImage(video, 0, 0);
             capturedImages.push(tempCanvas.toDataURL('image/png'));
 
             if (index < 2) {
-              setTimeout(() => takeNextPhoto(index + 1), 1000);
+              setTimeout(() => takeNextPhoto(index + 1), 1200);
             } else {
               stopCamera();
               renderStrip();
@@ -431,6 +492,7 @@
     function stopCamera() {
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
+        stream = null;
       }
       document.getElementById('snapBtn').style.display = 'flex';
     }
@@ -516,7 +578,7 @@
       renderStrip();
     }
 
-    // Dynamic Emoji System (Drag, Resize & Delete)
+    // Dynamic Emoji System
     function addEmoji(emojiChar) {
       const emojiContainer = document.createElement('div');
       emojiContainer.className = 'placed-emoji';
@@ -564,7 +626,6 @@
       element.ontouchstart = dragMouseDown;
 
       function dragMouseDown(e) {
-        e.preventDefault();
         const event = e.touches ? e.touches[0] : e;
         mouseX = event.clientX;
         mouseY = event.clientY;
@@ -595,7 +656,6 @@
     }
 
     function downloadStrip() {
-      // Export Canvas + Overlay Emojis
       const exportCanvas = document.createElement('canvas');
       exportCanvas.width = canvas.width;
       exportCanvas.height = canvas.height;
