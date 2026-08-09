@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Photobooth Web - Nazwa</title>
-  <!-- Google Fonts & Font Awesome Icons -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>Aesthetic Web Photobooth</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
@@ -16,83 +15,118 @@
       font-family: 'Poppins', sans-serif;
     }
 
+    /* Background Motif Polka-Dot Soft & Estetik */
     body {
-      background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+      background-color: #fdf2f8;
+      background-image: radial-gradient(#fbcfe8 1.5px, transparent 1.5px);
+      background-size: 24px 24px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
       padding: 20px 15px;
       color: #831843;
+      overflow-x: hidden;
     }
 
-    .main-wrapper {
+    .container {
       width: 100%;
-      max-width: 440px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    /* Multi-View System */
-    .view {
-      display: none;
-      width: 100%;
-      flex-direction: column;
-      align-items: center;
-      animation: fadeIn 0.3s ease-in-out;
-    }
-
-    .view.active {
-      display: flex;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    header {
+      max-width: 450px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      border-radius: 28px;
+      padding: 25px 20px;
+      box-shadow: 0 15px 35px rgba(244, 114, 182, 0.15);
+      border: 2px solid #fbcfe8;
       text-align: center;
-      margin-bottom: 20px;
+      position: relative;
+    }
+
+    /* Animasi Floating untuk Pita & Elemen Header */
+    @keyframes floatRibbon {
+      0% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(3deg); }
+      100% { transform: translateY(0px) rotate(0deg); }
+    }
+
+    @keyframes pulseGlow {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+
+    .ribbon-icon {
+      font-size: 3.2rem;
+      color: #f43f5e;
+      display: inline-block;
+      animation: floatRibbon 3s ease-in-out infinite;
+      margin-bottom: 5px;
+      filter: drop-shadow(0 4px 6px rgba(244, 63, 94, 0.2));
     }
 
     header h1 {
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       font-weight: 700;
-      color: #db2777;
+      color: #9f1239;
       margin-bottom: 5px;
     }
 
     header p {
-      font-size: 0.9rem;
-      color: #9d174d;
+      font-size: 0.85rem;
+      color: #be123c;
+      margin-bottom: 20px;
     }
 
-    /* Card Box Styles */
-    .card {
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(10px);
-      border-radius: 24px;
-      padding: 24px;
-      box-shadow: 0 10px 25px -5px rgba(219, 39, 119, 0.15);
+    /* Mode View Control */
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+
+    /* Button Styling + Animasi Hover */
+    .btn {
+      background: linear-gradient(135deg, #fb7185 0%, #f43f5e 100%);
+      color: white;
+      font-weight: 600;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 18px;
+      cursor: pointer;
       width: 100%;
+      font-size: 0.95rem;
+      margin-top: 10px;
+      box-shadow: 0 6px 15px rgba(244, 63, 94, 0.25);
+      transition: all 0.3s ease;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      text-align: center;
+      justify-content: center;
+      gap: 8px;
     }
 
-    /* Video Box */
-    .video-wrapper {
-      position: relative;
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(244, 63, 94, 0.35);
+    }
+
+    .btn:active { transform: scale(0.97); }
+
+    .btn-secondary {
+      background: #fecdd3;
+      color: #9f1239;
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover { background: #fbe1e6; }
+
+    /* Camera Area */
+    .camera-box {
       width: 100%;
-      aspect-ratio: 4 / 3;
-      background-color: #1f111a;
-      border-radius: 16px;
+      height: 280px;
+      background: #18181b;
+      border-radius: 20px;
       overflow: hidden;
-      box-shadow: inset 0 0 12px rgba(0,0,0,0.2);
+      position: relative;
+      margin-bottom: 15px;
+      border: 3px solid #fda4af;
     }
 
     video {
@@ -101,615 +135,352 @@
       object-fit: cover;
     }
 
-    video.mirror {
-      transform: scaleX(-1);
-    }
-
-    /* Overlay Countdown */
     .countdown-overlay {
       position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.35);
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4);
       display: flex;
-      justify-content: center;
       align-items: center;
-      font-size: 5.5rem;
+      justify-content: center;
+      font-size: 5rem;
       font-weight: 700;
-      color: #ffffff;
-      text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      color: white;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.2s ease;
+      transition: opacity 0.2s;
     }
 
-    .countdown-overlay.active {
-      opacity: 1;
-    }
+    .countdown-overlay.show { opacity: 1; }
 
-    /* Controls Layout */
-    .controls {
-      width: 100%;
-      margin-top: 15px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .options-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      width: 100%;
-    }
-
-    .option-box {
-      background: #fdf2f8;
-      padding: 10px 12px;
-      border-radius: 12px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #9d174d;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    /* Custom Switch */
-    .switch {
+    /* Canvas & Photo Strip Preview */
+    .strip-container {
       position: relative;
       display: inline-block;
-      width: 40px;
-      height: 22px;
+      margin: 15px 0;
+      max-width: 100%;
     }
 
-    .switch input { opacity: 0; width: 0; height: 0; }
-
-    .slider {
-      position: absolute; cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #f472b6;
-      transition: .3s;
-      border-radius: 22px;
+    canvas {
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      max-width: 100%;
+      height: auto;
     }
 
-    .slider:before {
-      position: absolute; content: "";
-      height: 16px; width: 16px;
-      left: 3px; bottom: 3px;
-      background-color: white;
-      transition: .3s;
-      border-radius: 50%;
+    /* Overlay Emoji Layer */
+    .emoji-layer {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
     }
 
-    input:checked + .slider { background-color: #db2777; }
-    input:checked + .slider:before { transform: translateX(18px); }
+    .placed-emoji {
+      position: absolute;
+      pointer-events: auto;
+      cursor: move;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px dashed transparent;
+      padding: 4px;
+      border-radius: 8px;
+    }
 
-    /* Buttons */
-    .btn {
-      width: 100%;
-      padding: 12px 18px;
+    .placed-emoji:hover, .placed-emoji.selected {
+      border-color: #f43f5e;
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    /* Emoji Action Controls (Hapus & Resize) */
+    .emoji-controls {
+      position: absolute;
+      top: -35px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      gap: 6px;
+      background: white;
+      padding: 4px 8px;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      z-index: 10;
+    }
+
+    .placed-emoji:hover .emoji-controls,
+    .placed-emoji.selected .emoji-controls {
+      display: flex;
+    }
+
+    .emoji-btn-del {
+      background: #ef4444;
+      color: white;
       border: none;
-      border-radius: 14px;
-      font-size: 0.95rem;
-      font-weight: 600;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      font-size: 0.75rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 6px -1px rgba(219, 39, 119, 0.2);
     }
 
-    .btn:active { transform: scale(0.98); }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
-      color: white;
-    }
-
-    .btn-secondary {
-      background: #fce7f3;
-      color: #9d174d;
-    }
-
-    .btn-outline {
-      background: transparent;
-      border: 2px solid #db2777;
-      color: #db2777;
-      box-shadow: none;
-    }
-
-    .btn-success {
-      background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
-      color: white;
-    }
-
-    /* Container Hasil & Stiker Interactive Canvas Wrapper */
-    .canvas-container {
-      position: relative;
-      margin-bottom: 15px;
-      touch-action: none;
-    }
-
-    .preview-canvas {
-      max-width: 210px;
-      border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(219, 39, 119, 0.2);
+    .emoji-slider {
+      width: 60px;
+      accent-color: #f43f5e;
       cursor: pointer;
     }
 
-    /* Selector Warna Frame Aesthetic */
-    .color-picker-title {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #9d174d;
-      margin-bottom: 8px;
+    /* Custom Controls (Frame & Emoji Picker) */
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 15px;
+      text-align: left;
     }
 
-    .color-palette {
+    .control-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #9f1239;
+      margin-bottom: 5px;
+    }
+
+    .color-options {
       display: flex;
       gap: 10px;
       justify-content: center;
-      margin-bottom: 15px;
     }
 
-    .color-circle {
+    .color-dot {
       width: 28px;
       height: 28px;
       border-radius: 50%;
       cursor: pointer;
-      border: 2px solid #ffffff;
+      border: 2px solid white;
       box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-      transition: transform 0.2s ease;
+      transition: transform 0.2s;
     }
 
-    .color-circle:hover, .color-circle.active {
-      transform: scale(1.2);
-      border-color: #db2777;
-    }
+    .color-dot:hover { transform: scale(1.15); }
 
-    /* Emoji Stiker Selector */
-    .emoji-picker-container {
-      width: 100%;
-      background: #fdf2f8;
-      border-radius: 12px;
-      padding: 10px;
-      margin-bottom: 15px;
-    }
-
-    .emoji-list {
+    .emoji-picker {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       justify-content: center;
-      font-size: 1.4rem;
-      overflow-x: auto;
+      font-size: 1.5rem;
+      background: #fff1f2;
+      padding: 10px;
+      border-radius: 16px;
     }
 
     .emoji-item {
       cursor: pointer;
-      user-select: none;
       transition: transform 0.2s;
     }
 
-    .emoji-item:active { transform: scale(1.3); }
+    .emoji-item:hover { transform: scale(1.3); }
 
-    /* Footer Web */
     footer {
-      margin-top: 25px;
-      text-align: center;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #9d174d;
+      margin-top: 20px;
+      font-size: 0.75rem;
+      color: #be123c;
     }
-
-    .divider {
-      display: flex; align-items: center; text-align: center;
-      color: #f472b6; font-size: 0.8rem; margin: 10px 0; width: 100%;
-    }
-    .divider::before, .divider::after {
-      content: ''; flex: 1; border-bottom: 1px solid #fbcfe8;
-    }
-    .divider span { padding: 0 10px; }
-
-    canvas { display: none; }
   </style>
 </head>
 <body>
 
-  <div class="main-wrapper">
-    <!-- ==================== 1. HOMEPAGE VIEW ==================== -->
-    <div id="homeView" class="view active">
+  <div class="container">
+    <!-- HOMEPAGE VIEW -->
+    <div id="homeView" class="view-section active">
+      <div class="ribbon-icon">🎀</div>
       <header>
-        <h1><i class="fa-solid fa-camera-retro"></i> Photobooth Web</h1>
-        <p>Capture your moment</p>
+        <h1>Photobooth Web</h1>
+        <p>Bikin Photo Strip Aesthetic secara Instan & Gratis!</p>
       </header>
-
-      <div class="card" style="gap: 15px;">
-        <div style="font-size: 4rem; margin: 10px 0;">🎀</div>
-        <h2 style="font-size: 1.2rem; color: #831843;">Siap Buat Photo Strip?</h2>
-        <p style="font-size: 0.85rem; color: #9d174d; line-height: 1.4;">
-          Ambil 3 foto manis bersama teman-temanmu atau upload foto dari galerimu!
-        </p>
-
-        <button id="startHomeBtn" class="btn btn-primary" style="margin-top: 10px;">
-          <i class="fa-solid fa-circle-play"></i> Mulai Photobooth
-        </button>
-      </div>
+      <button class="btn" onclick="startCamera()"><i class="fa-solid fa-camera"></i> Ambil Foto Langsung</button>
+      <label class="btn btn-secondary" style="margin-top: 10px; cursor: pointer;">
+        <i class="fa-solid fa-image"></i> Upload Foto dari Galeri
+        <input type="file" id="uploadInput" accept="image/*" multiple style="display: none;" onchange="handleUpload(event)">
+      </label>
     </div>
 
-    <!-- ==================== 2. CAMERA & UPLOAD VIEW ==================== -->
-    <div id="cameraView" class="view">
-      <header>
-        <h1><i class="fa-solid fa-camera-retro"></i> Photobooth Web</h1>
-        <p>Capture your moment</p>
-      </header>
-
-      <div class="card">
-        <div class="video-wrapper">
-          <video id="webcam" autoplay playsinline class="mirror"></video>
-          <div id="countdown" class="countdown-overlay">3</div>
-        </div>
-
-        <div class="controls">
-          <div class="options-grid">
-            <div class="option-box">
-              <span><i class="fa-solid fa-arrows-left-right"></i> Mirror</span>
-              <label class="switch">
-                <input type="checkbox" id="mirrorToggle" checked>
-                <span class="slider"></span>
-              </label>
-            </div>
-
-            <button id="switchCamBtn" class="option-box" style="cursor: pointer; border: none;">
-              <span><i class="fa-solid fa-camera-rotate"></i> Kamera</span>
-              <i class="fa-solid fa-repeat"></i>
-            </button>
-          </div>
-
-          <button id="startBtn" class="btn btn-primary">
-            <i class="fa-solid fa-camera"></i> Mulai Foto (3 Pose)
-          </button>
-
-          <div class="divider"><span>Atau</span></div>
-
-          <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
-          <button id="uploadBtn" class="btn btn-outline">
-            <i class="fa-solid fa-file-arrow-up"></i> Upload 3 Foto dari Galeri
-          </button>
-        </div>
+    <!-- CAMERA VIEW -->
+    <div id="cameraView" class="view-section">
+      <div class="camera-box">
+        <video id="video" autoplay playsinline></video>
+        <div id="countdown" class="countdown-overlay">3</div>
       </div>
+      <button id="snapBtn" class="btn" onclick="takePhotos()"><i class="fa-solid fa-aperture"></i> Mulai Foto (3 Pose)</button>
+      <button class="btn btn-secondary" onclick="resetApp()">Kembali</button>
     </div>
 
-    <!-- ==================== 3. RESULT VIEW ==================== -->
-    <div id="resultView" class="view">
+    <!-- RESULT VIEW -->
+    <div id="resultView" class="view-section">
       <header>
-        <h1><i class="fa-solid fa-heart"></i> Hasil Photo Strip</h1>
+        <h1 style="font-size: 1.2rem;">Hasil Photo Strip Kamu ✨</h1>
       </header>
 
-      <div class="card">
-        <!-- Interactive Preview Screen -->
-        <div class="canvas-container">
-          <img id="stripImg" class="preview-canvas" alt="Photo Strip Result">
-        </div>
+      <div class="strip-container" id="stripContainer">
+        <canvas id="photoCanvas"></canvas>
+        <div class="emoji-layer" id="emojiLayer"></div>
+      </div>
 
-        <!-- Palette Warna Frame Aesthetic -->
-        <div class="color-picker-title"><i class="fa-solid fa-palette"></i> Pilih Warna Frame:</div>
-        <div class="color-palette">
-          <div class="color-circle active" style="background: #ffffff;" data-color="#ffffff"></div>
-          <div class="color-circle" style="background: #fff5f5;" data-color="#fff5f5"></div>
-          <div class="color-circle" style="background: #fce7f3;" data-color="#fce7f3"></div>
-          <div class="color-circle" style="background: #e0f2fe;" data-color="#e0f2fe"></div>
-          <div class="color-circle" style="background: #dcfce7;" data-color="#dcfce7"></div>
-          <div class="color-circle" style="background: #fef9c3;" data-color="#fef9c3"></div>
-        </div>
-
-        <!-- Stiker Emoji iOS -->
-        <div class="emoji-picker-container">
-          <div class="color-picker-title" style="margin-bottom: 5px;">Tambah Stiker Emoji:</div>
-          <div class="emoji-list">
-            <span class="emoji-item">🤍</span>
-            <span class="emoji-item">✨</span>
-            <span class="emoji-item">🎀</span>
-            <span class="emoji-item">🧸</span>
-            <span class="emoji-item">🌸</span>
-            <span class="emoji-item">💌</span>
-            <span class="emoji-item">🌷</span>
+      <div class="controls-panel">
+        <div>
+          <div class="control-label"><i class="fa-solid fa-palette"></i> Pilih Warna Frame:</div>
+          <div class="color-options">
+            <div class="color-dot" style="background: #ffffff;" onclick="changeFrameColor('#ffffff')"></div>
+            <div class="color-dot" style="background: #ffe4e6;" onclick="changeFrameColor('#ffe4e6')"></div>
+            <div class="color-dot" style="background: #fbcfe8;" onclick="changeFrameColor('#fbcfe8')"></div>
+            <div class="color-dot" style="background: #dcfce7;" onclick="changeFrameColor('#dcfce7')"></div>
+            <div class="color-dot" style="background: #18181b;" onclick="changeFrameColor('#18181b')"></div>
           </div>
         </div>
 
-        <div class="controls">
-          <button id="downloadBtn" class="btn btn-success">
-            <i class="fa-solid fa-download"></i> Cetak / Download (PNG)
-          </button>
-          <button id="retakeBtn" class="btn btn-secondary">
-            <i class="fa-solid fa-rotate-left"></i> Foto Ulang
-          </button>
+        <div>
+          <div class="control-label"><i class="fa-solid fa-icons"></i> Tambah Stiker Emoji (Klik untuk tempel):</div>
+          <div class="emoji-picker">
+            <span class="emoji-item" onclick="addEmoji('🎀')">🎀</span>
+            <span class="emoji-item" onclick="addEmoji('✨')">✨</span>
+            <span class="emoji-item" onclick="addEmoji('🤍')">🤍</span>
+            <span class="emoji-item" onclick="addEmoji('🧸')">🧸</span>
+            <span class="emoji-item" onclick="addEmoji('🌸')">🌸</span>
+          </div>
         </div>
       </div>
+
+      <button class="btn" onclick="downloadStrip()"><i class="fa-solid fa-download"></i> Download Hasil PNG</button>
+      <button class="btn btn-secondary" onclick="resetApp()">Foto Ulang</button>
     </div>
+
+    <footer>Nazwa Sri Rahayu | SMAN 1 Cijeruk</footer>
   </div>
 
-  <!-- Footer Web -->
-  <footer>
-    Nazwa Sri Rahayu (IX-6) | SMAN 1 Cijeruk
-  </footer>
-
-  <canvas id="canvas"></canvas>
-
   <script>
-    // --- ELEMENT REFERENCES ---
     const homeView = document.getElementById('homeView');
     const cameraView = document.getElementById('cameraView');
     const resultView = document.getElementById('resultView');
-
-    const startHomeBtn = document.getElementById('startHomeBtn');
-    const video = document.getElementById('webcam');
-    const mirrorToggle = document.getElementById('mirrorToggle');
-    const switchCamBtn = document.getElementById('switchCamBtn');
-    const startBtn = document.getElementById('startBtn');
+    const video = document.getElementById('video');
     const countdownEl = document.getElementById('countdown');
-    
-    const fileInput = document.getElementById('fileInput');
-    const uploadBtn = document.getElementById('uploadBtn');
-
-    const stripImg = document.getElementById('stripImg');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const retakeBtn = document.getElementById('retakeBtn');
-
-    const canvas = document.getElementById('canvas');
+    const canvas = document.getElementById('photoCanvas');
     const ctx = canvas.getContext('2d');
+    const emojiLayer = document.getElementById('emojiLayer');
 
-    let isMirror = true;
-    let currentFacingMode = 'user';
-    let currentStream = null;
-    let capturedBasePhotos = [];
-    let selectedFrameColor = '#ffffff';
-    let addedEmojis = []; // Array menampung stiker emoji {symbol, x, y}
+    let stream = null;
+    let capturedImages = [];
+    let currentFrameColor = '#ffffff';
 
-    // --- AUDIO SYSTEM (Suara Jepretan Kamera & Beep) ---
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-    function playBeepSound() {
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.15);
+    function showView(view) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      view.classList.add('active');
     }
 
-    // Suara Jepretan Kamera Realistis
-    function playShutterSound() {
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      const now = audioCtx.currentTime;
-      
-      // Klik mekanis 1
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(1200, now);
-      osc.frequency.exponentialRampToValueAtTime(200, now + 0.05);
-      gain.gain.setValueAtTime(0.3, now);
-      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
-      osc.connect(gain); gain.connect(audioCtx.destination);
-      osc.start(now); osc.stop(now + 0.05);
-
-      // Klik mekanis 2 (shutter release)
-      const osc2 = audioCtx.createOscillator();
-      const gain2 = audioCtx.createGain();
-      osc2.type = 'sine';
-      osc2.frequency.setValueAtTime(800, now + 0.06);
-      osc2.frequency.exponentialRampToValueAtTime(100, now + 0.1);
-      gain2.gain.setValueAtTime(0.2, now + 0.06);
-      gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-      osc2.connect(gain2); gain2.connect(audioCtx.destination);
-      osc2.start(now + 0.06); osc2.stop(now + 0.1);
-    }
-
-    // --- SWITCH VIEWS ---
-    function showView(viewToShow) {
-      [homeView, cameraView, resultView].forEach(view => view.classList.remove('active'));
-      viewToShow.classList.add('active');
-    }
-
-    startHomeBtn.addEventListener('click', () => {
-      showView(cameraView);
-      initCamera();
-    });
-
-    // --- KAMERA ENGINE ---
-    function initCamera() {
-      if (currentStream) {
-        currentStream.getTracks().forEach(track => track.stop());
-      }
-
-      navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: currentFacingMode, width: { ideal: 1280 }, height: { ideal: 960 } }, 
-        audio: false 
-      })
-      .then(stream => {
-        currentStream = stream;
+    async function startCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
         video.srcObject = stream;
-      })
-      .catch(err => {
-        alert("Gagal mengakses kamera. Berikan izin di browser kamu!");
-      });
+        showView(cameraView);
+      } catch (err) {
+        alert("Gagal mengakses kamera. Pastikan memberikan izin kamera di browser kamu.");
+      }
     }
 
-    mirrorToggle.addEventListener('change', (e) => {
-      isMirror = e.target.checked;
-      if (isMirror) video.classList.add('mirror');
-      else video.classList.remove('mirror');
-    });
+    function takePhotos() {
+      capturedImages = [];
+      document.getElementById('snapBtn').style.display = 'none';
+      let count = 3;
 
-    switchCamBtn.addEventListener('click', () => {
-      currentFacingMode = (currentFacingMode === 'user') ? 'environment' : 'user';
-      initCamera();
-    });
+      const takeNextPhoto = (index) => {
+        let timer = 3;
+        countdownEl.innerText = timer;
+        countdownEl.classList.add('show');
 
-    // --- PROSES AMBIL FOTO ---
-    startBtn.addEventListener('click', async () => {
-      startBtn.disabled = true;
-      uploadBtn.disabled = true;
-      capturedBasePhotos = [];
-
-      for (let i = 1; i <= 3; i++) {
-        await runCountdown(3);
-        playShutterSound();
-        
-        countdownEl.innerText = "📸";
-        countdownEl.classList.add('active');
-        await new Promise(r => setTimeout(r, 200));
-        countdownEl.classList.remove('active');
-
-        capturedBasePhotos.push(captureSingleFrame());
-      }
-
-      addedEmojis = []; // Reset Emoji
-      renderPhotoStrip();
-      startBtn.disabled = false;
-      uploadBtn.disabled = false;
-    });
-
-    function runCountdown(seconds) {
-      return new Promise(resolve => {
-        let count = seconds;
-        countdownEl.innerText = count;
-        countdownEl.classList.add('active');
-        playBeepSound();
-
-        const timer = setInterval(() => {
-          count--;
-          if (count > 0) {
-            countdownEl.innerText = count;
-            playBeepSound();
+        const interval = setInterval(() => {
+          timer--;
+          if (timer > 0) {
+            countdownEl.innerText = timer;
           } else {
-            clearInterval(timer);
-            countdownEl.classList.remove('active');
-            resolve();
+            clearInterval(interval);
+            countdownEl.classList.remove('show');
+            
+            // Capture image
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = video.videoWidth || 640;
+            tempCanvas.height = video.videoHeight || 480;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(video, 0, 0);
+            capturedImages.push(tempCanvas.toDataURL('image/png'));
+
+            if (index < 2) {
+              setTimeout(() => takeNextPhoto(index + 1), 1000);
+            } else {
+              stopCamera();
+              renderStrip();
+              showView(resultView);
+            }
           }
         }, 1000);
-      });
+      };
+
+      takeNextPhoto(0);
     }
 
-    function captureSingleFrame() {
-      const tempCanvas = document.createElement('canvas');
-      const tempCtx = tempCanvas.getContext('2d');
-      tempCanvas.width = video.videoWidth || 640;
-      tempCanvas.height = video.videoHeight || 480;
-
-      if (isMirror) {
-        tempCtx.translate(tempCanvas.width, 0);
-        tempCtx.scale(-1, 1);
+    function stopCamera() {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
       }
-      
-      tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
-      return tempCanvas.toDataURL('image/png');
+      document.getElementById('snapBtn').style.display = 'flex';
     }
 
-    // --- UPLOAD FOTO GALERI ---
-    uploadBtn.addEventListener('click', () => fileInput.click());
-
-    fileInput.addEventListener('change', (e) => {
-      const files = Array.from(e.target.files);
-      if (files.length !== 3) {
-        alert("Pilih persis 3 foto sekaligus dari galeri kamu!");
-        fileInput.value = "";
+    function handleUpload(e) {
+      const files = Array.from(e.target.files).slice(0, 3);
+      if (files.length < 3) {
+        alert("Pilih 3 foto dari galeri!");
         return;
       }
+      capturedImages = [];
+      let loaded = 0;
 
-      const photoPromises = files.map(file => {
-        return new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onload = (event) => resolve(event.target.result);
-          reader.readAsDataURL(file);
-        });
+      files.forEach((file, idx) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          capturedImages[idx] = event.target.result;
+          loaded++;
+          if (loaded === 3) {
+            renderStrip();
+            showView(resultView);
+          }
+        };
+        reader.readAsDataURL(file);
       });
+    }
 
-      Promise.all(photoPromises).then(uploadedPhotos => {
-        capturedBasePhotos = uploadedPhotos;
-        addedEmojis = [];
-        renderPhotoStrip();
-        fileInput.value = "";
-      });
-    });
-
-    // --- SELEKSI WARNA FRAME ---
-    document.querySelectorAll('.color-circle').forEach(circle => {
-      circle.addEventListener('click', (e) => {
-        document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('active'));
-        e.target.classList.add('active');
-        selectedFrameColor = e.target.getAttribute('data-color');
-        renderPhotoStrip();
-      });
-    });
-
-    // --- STIKER EMOJI INTERAKTIF ---
-    document.querySelectorAll('.emoji-item').forEach(item => {
-      item.addEventListener('click', () => {
-        // Tambahkan emoji di posisi acak tengah
-        addedEmojis.push({
-          symbol: item.innerText,
-          x: canvas.width / 2 + (Math.random() * 60 - 30),
-          y: canvas.height / 2 + (Math.random() * 100 - 50)
-        });
-        renderPhotoStrip();
-      });
-    });
-
-    // Memindahkan Emoji dengan Tap/Click pada Preview Image
-    stripImg.addEventListener('click', (e) => {
-      if (addedEmojis.length === 0) return;
-      const rect = stripImg.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-      
-      const clickX = (e.clientX - rect.left) * scaleX;
-      const clickY = (e.clientY - rect.top) * scaleY;
-
-      // Pindahkan emoji terakhir ke lokasi klik
-      addedEmojis[addedEmojis.length - 1].x = clickX;
-      addedEmojis[addedEmojis.length - 1].y = clickY;
-      renderPhotoStrip();
-    });
-
-    // --- RENDER PHOTO STRIP CANVAS ---
-    function renderPhotoStrip() {
-      const stripWidth = 400;
-      const photoHeight = 280;
+    function renderStrip() {
+      const width = 360;
+      const photoHeight = 240;
       const padding = 20;
-      const headerHeight = 30;
-      const footerHeight = 40;
+      const gap = 15;
+      const bottomSpace = 60;
 
-      const stripHeight = headerHeight + (photoHeight * 3) + (padding * 4) + footerHeight;
+      canvas.width = width;
+      canvas.height = padding + (photoHeight * 3) + (gap * 2) + bottomSpace;
 
-      canvas.width = stripWidth;
-      canvas.height = stripHeight;
+      // Draw Frame Background
+      ctx.fillStyle = currentFrameColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Background Warna Frame
-      ctx.fillStyle = selectedFrameColor;
-      ctx.fillRect(0, 0, stripWidth, stripHeight);
-
-      let photosLoaded = 0;
-
-      capturedBasePhotos.forEach((photoSrc, index) => {
+      let loadedCount = 0;
+      capturedImages.forEach((src, i) => {
         const img = new Image();
-        img.src = photoSrc;
         img.onload = () => {
-          const x = padding;
-          const y = headerHeight + padding + index * (photoHeight + padding);
-          const targetW = stripWidth - (padding * 2);
-          const targetH = photoHeight;
-
+          const y = padding + i * (photoHeight + gap);
+          
           // Crop Center (Anti-Gepeng)
           const imgAspect = img.width / img.height;
-          const targetAspect = targetW / targetH;
+          const targetAspect = (width - (padding * 2)) / photoHeight;
           let sx, sy, sWidth, sHeight;
 
           if (imgAspect > targetAspect) {
@@ -724,57 +495,142 @@
             sy = (img.height - sHeight) / 2;
           }
 
-          ctx.drawImage(img, sx, sy, sWidth, sHeight, x, y, targetW, targetH);
+          ctx.drawImage(img, sx, sy, sWidth, sHeight, padding, y, width - (padding * 2), photoHeight);
 
-          // Border Foto Tipis
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-          ctx.lineWidth = 3;
-          ctx.strokeRect(x, y, targetW, targetH);
-
-          photosLoaded++;
-          if (photosLoaded === 3) {
-            drawDecorations();
+          loadedCount++;
+          if (loadedCount === 3) {
+            // Draw Date Footer
+            ctx.fillStyle = (currentFrameColor === '#18181b') ? '#ffffff' : '#831843';
+            ctx.font = '600 13px Poppins';
+            ctx.textAlign = 'center';
+            const dateStr = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+            ctx.fillText(`★ PHOTOBOOTH • ${dateStr} ★`, width / 2, canvas.height - 22);
           }
         };
+        img.src = src;
       });
+    }
 
-      function drawDecorations() {
-        // Tanggal Pengambilan Foto di Bawah
-        const dateStr = new Date().toLocaleDateString('id-ID', {
-          day: 'numeric', month: 'short', year: 'numeric'
-        });
-        ctx.fillStyle = '#9d174d';
-        ctx.font = '12px "Poppins", sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(dateStr, stripWidth / 2, stripHeight - 20);
+    function changeFrameColor(color) {
+      currentFrameColor = color;
+      renderStrip();
+    }
 
-        // Render Emoji-Emoji yang Ditambahkan
-        ctx.font = '32px "Apple Color Emoji", "Segoe UI Emoji", sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        
-        addedEmojis.forEach(emoji => {
-          ctx.fillText(emoji.symbol, emoji.x, emoji.y);
-        });
+    // Dynamic Emoji System (Drag, Resize & Delete)
+    function addEmoji(emojiChar) {
+      const emojiContainer = document.createElement('div');
+      emojiContainer.className = 'placed-emoji';
+      emojiContainer.style.left = '40%';
+      emojiContainer.style.top = '40%';
 
-        // Tampilkan Hasil ke Preview Image
-        stripImg.src = canvas.toDataURL('image/png');
-        showView(resultView);
+      const textEl = document.createElement('span');
+      textEl.innerText = emojiChar;
+      textEl.style.fontSize = '32px';
+
+      const controls = document.createElement('div');
+      controls.className = 'emoji-controls';
+
+      // Slider Resize
+      const slider = document.createElement('input');
+      slider.type = 'range';
+      slider.className = 'emoji-slider';
+      slider.min = '16';
+      slider.max = '72';
+      slider.value = '32';
+      slider.oninput = (e) => { textEl.style.fontSize = `${e.target.value}px`; };
+
+      // Delete Button
+      const delBtn = document.createElement('button');
+      delBtn.className = 'emoji-btn-del';
+      delBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+      delBtn.onclick = (e) => {
+        e.stopPropagation();
+        emojiContainer.remove();
+      };
+
+      controls.appendChild(slider);
+      controls.appendChild(delBtn);
+      emojiContainer.appendChild(controls);
+      emojiContainer.appendChild(textEl);
+
+      makeDraggable(emojiContainer);
+      emojiLayer.appendChild(emojiContainer);
+    }
+
+    function makeDraggable(element) {
+      let posX = 0, posY = 0, mouseX = 0, mouseY = 0;
+
+      element.onmousedown = dragMouseDown;
+      element.ontouchstart = dragMouseDown;
+
+      function dragMouseDown(e) {
+        e.preventDefault();
+        const event = e.touches ? e.touches[0] : e;
+        mouseX = event.clientX;
+        mouseY = event.clientY;
+
+        document.onmouseup = closeDragElement;
+        document.ontouchend = closeDragElement;
+        document.onmousemove = elementDrag;
+        document.ontouchmove = elementDrag;
+      }
+
+      function elementDrag(e) {
+        const event = e.touches ? e.touches[0] : e;
+        posX = mouseX - event.clientX;
+        posY = mouseY - event.clientY;
+        mouseX = event.clientX;
+        mouseY = event.clientY;
+
+        element.style.top = (element.offsetTop - posY) + "px";
+        element.style.left = (element.offsetLeft - posX) + "px";
+      }
+
+      function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+        document.ontouchend = null;
+        document.ontouchmove = null;
       }
     }
 
-    // --- BUTTON ACTIONS ---
-    downloadBtn.addEventListener('click', () => {
-      const a = document.createElement('a');
-      a.href = stripImg.src;
-      a.download = `Photobooth_Nazwa_${Date.now()}.png`;
-      a.click();
-    });
+    function downloadStrip() {
+      // Export Canvas + Overlay Emojis
+      const exportCanvas = document.createElement('canvas');
+      exportCanvas.width = canvas.width;
+      exportCanvas.height = canvas.height;
+      const exportCtx = exportCanvas.getContext('2d');
 
-    retakeBtn.addEventListener('click', () => {
-      showView(cameraView);
-      initCamera();
-    });
+      exportCtx.drawImage(canvas, 0, 0);
+
+      const emojis = emojiLayer.querySelectorAll('.placed-emoji');
+      emojis.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        const layerRect = emojiLayer.getBoundingClientRect();
+        const scale = canvas.width / layerRect.width;
+
+        const x = (rect.left - layerRect.left) * scale;
+        const y = (rect.top - layerRect.top) * scale;
+        const fontPx = parseFloat(window.getComputedStyle(el.querySelector('span')).fontSize) * scale;
+        const text = el.querySelector('span').innerText;
+
+        exportCtx.font = `${fontPx}px serif`;
+        exportCtx.textAlign = 'left';
+        exportCtx.textBaseline = 'top';
+        exportCtx.fillText(text, x, y + (4 * scale));
+      });
+
+      const link = document.createElement('a');
+      link.download = `photobooth-${Date.now()}.png`;
+      link.href = exportCanvas.toDataURL('image/png');
+      link.click();
+    }
+
+    function resetApp() {
+      stopCamera();
+      emojiLayer.innerHTML = '';
+      showView(homeView);
+    }
   </script>
 </body>
-      </html>
+  </html>
