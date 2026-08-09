@@ -36,7 +36,7 @@
       background: rgba(255, 255, 255, 0.94);
       backdrop-filter: blur(10px);
       border-radius: 28px;
-      padding: 25px 20px;
+      padding: 30px 22px;
       box-shadow: 0 15px 35px rgba(244, 114, 182, 0.15);
       border: 2px solid #fbcfe8;
       text-align: center;
@@ -51,25 +51,27 @@
     }
 
     .ribbon-icon {
-      font-size: 3.2rem;
+      font-size: 3.5rem;
       color: #f43f5e;
       display: inline-block;
       animation: floatRibbon 3s ease-in-out infinite;
-      margin-bottom: 5px;
+      margin-bottom: 10px;
       filter: drop-shadow(0 4px 6px rgba(244, 63, 94, 0.2));
     }
 
-    header h1 {
-      font-size: 1.5rem;
+    /* Greetings Styling */
+    .greeting-title {
+      font-size: 1.6rem;
       font-weight: 700;
       color: #9f1239;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
     }
 
-    header p {
-      font-size: 0.85rem;
+    .greeting-subtitle {
+      font-size: 0.9rem;
       color: #be123c;
-      margin-bottom: 20px;
+      line-height: 1.5;
+      margin-bottom: 25px;
     }
 
     /* Mode View Control */
@@ -82,18 +84,18 @@
       color: white;
       font-weight: 600;
       border: none;
-      padding: 12px 20px;
-      border-radius: 18px;
+      padding: 14px 22px;
+      border-radius: 20px;
       cursor: pointer;
       width: 100%;
-      font-size: 0.95rem;
+      font-size: 1rem;
       margin-top: 10px;
       box-shadow: 0 6px 15px rgba(244, 63, 94, 0.25);
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .btn:hover { transform: translateY(-2px); }
@@ -290,7 +292,7 @@
     .emoji-item:hover { transform: scale(1.3); }
 
     footer {
-      margin-top: 20px;
+      margin-top: 25px;
       font-size: 0.75rem;
       color: #be123c;
     }
@@ -299,21 +301,32 @@
 <body>
 
   <div class="container">
-    <!-- HOMEPAGE VIEW -->
+    
+    <!-- 1. HOMEPAGE / GREETINGS VIEW -->
     <div id="homeView" class="view-section active">
       <div class="ribbon-icon">🎀</div>
-      <header>
-        <h1>Photobooth Web</h1>
-        <p>Bikin Photo Strip Aesthetic secara Instan & Gratis!</p>
-      </header>
+      <h1 class="greeting-title">Halo, Selamat Datang! ✨</h1>
+      <p class="greeting-subtitle">
+        Siapkan senyum terbaikmu! Buat photo strip estetik secara instan, gratis, dan mudah langsung dari browsermu.
+      </p>
+      <button class="btn" onclick="showView(optionView)">
+        <i class="fa-solid fa-sparkles"></i> Mulai Photobooth
+      </button>
+    </div>
+
+    <!-- 2. OPTION / MENU VIEW -->
+    <div id="optionView" class="view-section">
+      <div class="ribbon-icon" style="font-size: 2.5rem;">📸</div>
+      <h2 style="font-size: 1.2rem; color: #9f1239; margin-bottom: 15px;">Pilih Metode Foto</h2>
       <button class="btn" onclick="startCamera()"><i class="fa-solid fa-camera"></i> Ambil Foto Langsung</button>
       <label class="btn btn-secondary" style="margin-top: 10px; cursor: pointer;">
         <i class="fa-solid fa-image"></i> Upload Foto dari Galeri
         <input type="file" id="uploadInput" accept="image/*" multiple style="display: none;" onchange="handleUpload(event)">
       </label>
+      <button class="btn btn-secondary" style="margin-top: 15px;" onclick="resetApp()">Kembali ke Beranda</button>
     </div>
 
-    <!-- CAMERA VIEW -->
+    <!-- 3. CAMERA VIEW -->
     <div id="cameraView" class="view-section">
       <div class="camera-box">
         <video id="video" class="mirror" autoplay playsinline></video>
@@ -330,10 +343,10 @@
       <button class="btn btn-secondary" onclick="resetApp()">Kembali ke Beranda</button>
     </div>
 
-    <!-- RESULT VIEW -->
+    <!-- 4. RESULT VIEW -->
     <div id="resultView" class="view-section">
       <header>
-        <h1 style="font-size: 1.2rem;">Hasil Photo Strip Kamu ✨</h1>
+        <h1 style="font-size: 1.2rem; color: #9f1239;">Hasil Photo Strip Kamu ✨</h1>
       </header>
 
       <div class="strip-container" id="stripContainer">
@@ -374,6 +387,7 @@
 
   <script>
     const homeView = document.getElementById('homeView');
+    const optionView = document.getElementById('optionView');
     const cameraView = document.getElementById('cameraView');
     const resultView = document.getElementById('resultView');
     const video = document.getElementById('video');
@@ -388,7 +402,7 @@
     let currentFacingMode = 'user';
     let isMirrored = true;
 
-    // Web Audio API untuk Efek Suara
+    // Web Audio API untuk Efek Suara (Beep & Shutter)
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
     function playBeepSound(freq = 800, type = 'sine', duration = 0.1) {
@@ -500,7 +514,7 @@
     function handleUpload(e) {
       const files = Array.from(e.target.files).slice(0, 3);
       if (files.length < 3) {
-        alert("Pilih 3 foto dari galeri!");
+        alert("Pilih minimal 3 foto dari galeri!");
         return;
       }
       capturedImages = [];
